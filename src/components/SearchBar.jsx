@@ -1,4 +1,6 @@
 import { useState } from "react"
+import MovieCard from "./MovieCard";
+import SkeletionCard from "./SkeletonCard";
 const openLibraryApi = import.meta.env.VITE_OPEN_LIB_API;
 const dogImgAPi = import.meta.env.VITE_DOG_IMG_API
 import { v4 as uuidv4 } from 'uuid';
@@ -24,10 +26,10 @@ export default function SearchBar(){
         const jsonData = await res.json();
         const { message } = jsonData
         return message;
-  }
+  } 
 }
 
-  const handleSearch = async (e) => {    
+const handleSearch = async (e) => {    
     e.preventDefault();
     setfetching(fetchStatus.loading)    
     if (query.trim() === '') return;
@@ -70,6 +72,7 @@ export default function SearchBar(){
     }
   };
 
+
   const indexOfLastItem = currentPage* itemsPerPage
   const indexOfFirstItem = indexOfLastItem - itemsPerPage
   const currentItems = movies.slice(indexOfFirstItem, indexOfLastItem)
@@ -108,45 +111,21 @@ export default function SearchBar(){
       </form>
     </header>
     {fetching == fetchStatus.success&& <div className="p-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {currentItems.map(movie => (
-            <div key={movie.id} className="bg-gray-200 p-4 rounded-md shadow-md text-gray-900">
-              <img src={movie.movieImg} alt="thumbnail" className="w-full h-64 object-cover rounded-md mb-4" />
-              <h3 className="text-lg font-semibold">{movie.title}</h3>
-              <p className="text-sm">Release Year: {movie.release_date}</p>
-              <p className="text-sm">Author Name: {movie.authorName}</p>
-              <p className="text-sm">Characters: {movie.characters?.join(', ')}</p>
-              <p className="text-sm">Language: {movie.language?.join(', ')}</p>
-              <p className="text-sm">Average Rating: {movie.avgRating}</p>
-              <p className="text-sm">Ratings Count: {movie.rating1}, {movie.rating2}, {movie.rating3}, {movie.rating4}, {movie.rating5}</p>
-            </div>
-          ))}
-        </div>
+        <MovieCard currentItems={currentItems} />
         <div className="flex justify-center mt-4">
           {renderPagination()}
         </div>
       </div>}
 
-      {fetching === fetchStatus.loading && (
-        <div className="p-4 animate-pulse">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {[...Array(itemsPerPage)].map((_, index) => (
-              <div key={index} className="bg-gray-200 p-4 rounded-md shadow-md text-gray-900">
-                <div className="w-full h-64 bg-gray-300 rounded-md mb-4"></div>
-                <div className="h-4 bg-gray-300 w-1/2 mb-2"></div>
-                <div className="h-3 bg-gray-300 w-3/4 mb-2"></div>
-                <div className="h-3 bg-gray-300 w-2/4 mb-2"></div>
-                <div className="h-3 bg-gray-300 w-full mb-2"></div>
-                <div className="h-3 bg-gray-300 w-1/2 mb-2"></div>
-                <div className="h-3 bg-gray-300 w-1/2 mb-2"></div>
-                <div className="h-3 bg-gray-300 w-3/4 mb-2"></div>
-              </div>
-            ))}
-          </div>
-          <div className="flex justify-center mt-4 h-10 bg-gray-300 rounded">
-          </div>   
+    {
+        fetching == fetchStatus.loading && <div className="p-4 animate-pulse">
+            <SkeletionCard itemsPerPage={itemsPerPage} />
+      
+        <div className="flex justify-center mt-4 h-10 bg-gray-300 rounded">
         </div>
-      )}
-       
+      </div>
+    }
   </div>
 }
+
+
